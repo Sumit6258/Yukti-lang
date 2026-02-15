@@ -1,0 +1,7 @@
+// Hello World in Yukti
+// File: hello.yukti
+
+prakriya main() -> Shunya {
+    likho("नमस्ते, विश्व!");
+    likho("Namaste, World!");
+}

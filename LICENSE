@@ -1,0 +1,47 @@
+# Proprietary License
+
+Copyright (c) 2026 Sumit Suman. All Rights Reserved.
+
+## Terms and Conditions
+
+This software and associated documentation files (the "Software"), including but not limited to the Yukti programming language specification, compiler design, documentation, and example code, are proprietary and confidential.
+
+### Restrictions
+
+1. **No Distribution**: You may not distribute, publish, sublicense, sell, or transfer copies of the Software to any third party.
+
+2. **No Modification**: You may not modify, adapt, translate, reverse engineer, decompile, disassemble, or create derivative works based on the Software.
+
+3. **No Commercial Use**: You may not use the Software for any commercial purpose without explicit written permission from the copyright holder.
+
+4. **No Public Use**: You may not make the Software available to the public through any means, including but not limited to public repositories, file sharing services, or any other distribution method.
+
+5. **Viewing Only**: This repository is made available solely for viewing and reference purposes. Any use beyond viewing requires explicit written permission from the copyright holder.
+
+### Permitted Actions
+
+- Viewing the Software for personal educational purposes
+- Reading and studying the documentation
+
+### Intellectual Property
+
+All intellectual property rights in and to the Software, including but not limited to:
+- The Yukti programming language design and specification
+- The compiler architecture and implementation details
+- All documentation and examples
+- The name "Yukti" and associated branding
+
+remain exclusively with Sumit Suman.
+
+### Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Contact
+
+For permissions, licensing inquiries, or other questions, contact:
+sumitsuman6258@gmail.com
+
+---
+
+**Note**: This is a proprietary license. By accessing this repository, you agree to these terms.

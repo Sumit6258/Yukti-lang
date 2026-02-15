@@ -1,0 +1,130 @@
+// Error Handling Example in Yukti
+// File: error_handling.yukti
+
+aayaat shastra::io;
+aayaat shastra::file::File;
+
+// Custom error type
+prakar GannaError {
+    BhagZero,
+    NegativeInput(Shabd),
+    FileError(Shabd),
+}
+
+// Safe division function
+prakriya vibhajan(ank: Ank32, bhajak: Ank32) -> Parinam<Ank32, GannaError> {
+    yadi bhajak == 0 {
+        vapasi Parinam::Asafal(GannaError::BhagZero);
+    }
+    vapasi Parinam::Safal(ank / bhajak);
+}
+
+// Calculate factorial with error handling
+prakriya factorial(n: Ank32) -> Parinam<Ank64, GannaError> {
+    yadi n < 0 {
+        vapasi Parinam::Asafal(
+            GannaError::NegativeInput("Factorial needs non-negative number".roop())
+        );
+    }
+    
+    yadi n == 0 || n == 1 {
+        vapasi Parinam::Safal(1);
+    }
+    
+    parivartan result: Ank64 = 1;
+    pratyek i in 2..=n {
+        result = result * (i as Ank64);
+    }
+    
+    vapasi Parinam::Safal(result);
+}
+
+// Read number from file with error handling
+prakriya file_se_padho(path: &Shabd) -> Parinam<Ank32, GannaError> {
+    sthir content = milaan File::padho(path) {
+        Parinam::Safal(s) => s,
+        Parinam::Asafal(e) => {
+            vapasi Parinam::Asafal(
+                GannaError::FileError(format!("Could not read file: {}", e))
+            );
+        }
+    };
+    
+    milaan content.trim().parse::<Ank32>() {
+        Parinam::Safal(num) => Parinam::Safal(num),
+        Parinam::Asafal(_) => Parinam::Asafal(
+            GannaError::FileError("Invalid number in file".roop())
+        ),
+    }
+}
+
+// Using the ? operator for error propagation
+prakriya process_calculation(a: Ank32, b: Ank32) -> Parinam<Ank32, GannaError> {
+    sthir result1 = vibhajan(a, b)?;  // ? propagates error if Asafal
+    sthir result2 = vibhajan(result1, 2)?;
+    vapasi Parinam::Safal(result2);
+}
+
+prakriya main() -> Parinam<Shunya, GannaError> {
+    likho("=== Error Handling Demo ===\n");
+    
+    // Example 1: Pattern matching on Result
+    likho("Example 1: Division with error handling");
+    
+    milaan vibhajan(10, 2) {
+        Parinam::Safal(result) => likho("10 / 2 = {}", result),
+        Parinam::Asafal(e) => likho("Error: {:?}", e),
+    }
+    
+    milaan vibhajan(10, 0) {
+        Parinam::Safal(result) => likho("10 / 0 = {}", result),
+        Parinam::Asafal(GannaError::BhagZero) => {
+            likho("Error: Cannot divide by zero!");
+        },
+        Parinam::Asafal(e) => likho("Error: {:?}", e),
+    }
+    
+    // Example 2: Factorial calculation
+    likho("\nExample 2: Factorial calculation");
+    
+    sthir numbers = [5, -3, 10];
+    
+    pratyek &n in &numbers {
+        milaan factorial(n) {
+            Parinam::Safal(result) => {
+                likho("Factorial of {} = {}", n, result);
+            },
+            Parinam::Asafal(GannaError::NegativeInput(msg)) => {
+                likho("Error for {}: {}", n, msg);
+            },
+            Parinam::Asafal(e) => {
+                likho("Unexpected error: {:?}", e);
+            }
+        }
+    }
+    
+    // Example 3: Error propagation with ?
+    likho("\nExample 3: Error propagation");
+    
+    milaan process_calculation(100, 10) {
+        Parinam::Safal(result) => {
+            likho("Chained calculation result: {}", result);
+        },
+        Parinam::Asafal(e) => {
+            likho("Calculation failed: {:?}", e);
+        }
+    }
+    
+    // Example 4: Using unwrap_or for default values
+    likho("\nExample 4: Default values");
+    
+    sthir safe_div = vibhajan(10, 2).unwrap_or(0);
+    likho("Safe division result: {}", safe_div);
+    
+    sthir zero_div = vibhajan(10, 0).unwrap_or(-1);
+    likho("Failed division with default: {}", zero_div);
+    
+    likho("\n=== Demo Complete ===");
+    
+    vapasi Parinam::Safal(Shunya);
+}

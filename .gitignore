@@ -1,0 +1,72 @@
+# Yukti Language Repository - .gitignore
+
+# Build directories
+build/
+target/
+out/
+bin/
+obj/
+
+# Compiler intermediate files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# LLVM IR and assembly
+*.ll
+*.bc
+*.s
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Package manager
+node_modules/
+.npm/
+
+# Test output
+test_results/
+coverage/
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+
+# Python (if using Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+venv/
+env/
+
+# Rust (if bootstrapping with Rust)
+Cargo.lock
+**/*.rs.bk
+
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes

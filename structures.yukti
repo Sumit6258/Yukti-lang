@@ -1,0 +1,65 @@
+// Data Structures Example in Yukti
+// File: structures.yukti
+
+aayaat shastra::sangrah::{Suchi, Muth};
+
+// Define a Person structure
+sangrah Vyakti {
+    naam: Shabd,
+    aayu: Ank32,
+    sheher: Shabd,
+}
+
+// Implement methods for Vyakti
+upaaya Vyakti {
+    // Constructor
+    prakriya naya(naam: Shabd, aayu: Ank32, sheher: Shabd) -> Vyakti {
+        Vyakti { naam, aayu, sheher }
+    }
+    
+    // Method to display person info
+    prakriya parichay(&swayam) {
+        likho("Naam: {}, Aayu: {}, Sheher: {}", 
+              swayam.naam, swayam.aayu, swayam.sheher);
+    }
+    
+    // Pure method to check if adult
+    pavitra prakriya vyask_hai(&swayam) -> Satya {
+        vapasi swayam.aayu >= 18;
+    }
+}
+
+prakriya main() -> Shunya {
+    // Create a list of people
+    parivartan log: Suchi<Vyakti> = Suchi::naya();
+    
+    // Add people to the list
+    log.jodo(Vyakti::naya("Arjun".roop(), 25, "Mumbai".roop()));
+    log.jodo(Vyakti::naya("Priya".roop(), 30, "Delhi".roop()));
+    log.jodo(Vyakti::naya("Rahul".roop(), 17, "Bangalore".roop()));
+    
+    likho("=== Vyakti Suchi ===");
+    
+    // Iterate through people
+    pratyek vyakti in &log {
+        vyakti.parichay();
+        yadi vyakti.vyask_hai() {
+            likho("  Status: Vyask (Adult)");
+        } anyatha {
+            likho("  Status: Balak (Minor)");
+        }
+    }
+    
+    // Create a map for counting cities
+    parivartan sheher_ginati: Muth<Shabd, Ank32> = Muth::naya();
+    
+    pratyek vyakti in &log {
+        sthir count = sheher_ginati.prapt(&vyakti.sheher).unwrap_or(&0);
+        sheher_ginati.dalo(vyakti.sheher.clone(), count + 1);
+    }
+    
+    likho("\n=== Sheher Statistics ===");
+    pratyek (sheher, ginati) in &sheher_ginati {
+        likho("{}: {} log", sheher, ginati);
+    }
+}

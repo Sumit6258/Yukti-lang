@@ -1,0 +1,82 @@
+// Concurrency Example in Yukti using Karma
+// File: concurrency.yukti
+
+aayaat shastra::karma::{karma, pratiksha, Karma};
+aayaat shastra::sandesh;
+aayaat shastra::samay::Avadhi;
+
+// Async function to simulate fetching data
+karma prakriya fetch_data(id: Ank32) -> Shabd {
+    likho("Fetching data {}...", id);
+    
+    // Simulate network delay
+    pratiksha Avadhi::sekand_se(2);
+    
+    vapasi format!("Data {} fetched successfully", id);
+}
+
+// Worker that processes messages from a channel
+karma prakriya worker(id: Ank32, receiver: sandesh::Pane_wala<Ank32>) {
+    likho("Worker {} started", id);
+    
+    chakra {
+        milaan receiver.pao() {
+            Sambhavya::Kuch(num) => {
+                likho("Worker {} processing: {}", id, num);
+                sthir result = num * num;
+                likho("Worker {} result: {}", id, result);
+            },
+            Sambhavya::Nahin => {
+                likho("Worker {} shutting down", id);
+                toro;
+            }
+        }
+    }
+}
+
+karma prakriya main() -> Parinam<Shunya, Shabd> {
+    likho("=== Karma Concurrency Demo ===\n");
+    
+    // Example 1: Multiple concurrent tasks
+    likho("Example 1: Concurrent data fetching");
+    
+    sthir task1 = karma { pratiksha fetch_data(1) };
+    sthir task2 = karma { pratiksha fetch_data(2) };
+    sthir task3 = karma { pratiksha fetch_data(3) };
+    
+    // Wait for all tasks to complete
+    sthir result1 = pratiksha task1;
+    sthir result2 = pratiksha task2;
+    sthir result3 = pratiksha task3;
+    
+    likho("\nResults:");
+    likho("  {}", result1);
+    likho("  {}", result2);
+    likho("  {}", result3);
+    
+    // Example 2: Message passing between tasks
+    likho("\n\nExample 2: Message passing");
+    
+    sthir (bhejne_wala, pane_wala) = sandesh::nayi::<Ank32>();
+    
+    // Spawn worker tasks
+    sthir worker1 = karma { pratiksha worker(1, pane_wala.clone()) };
+    sthir worker2 = karma { pratiksha worker(2, pane_wala.clone()) };
+    
+    // Send work to workers
+    pratyek i in 1..=5 {
+        bhejne_wala.bhejo(i)?;
+        pratiksha Avadhi::millisekand_se(500);
+    }
+    
+    // Close the channel
+    bhejne_wala.band_karo();
+    
+    // Wait for workers to finish
+    pratiksha worker1;
+    pratiksha worker2;
+    
+    likho("\n=== Demo Complete ===");
+    
+    vapasi Parinam::Safal(Shunya);
+}
