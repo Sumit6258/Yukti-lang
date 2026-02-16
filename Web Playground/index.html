@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yukti Playground - युक्ति भाषा</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --saffron: #FF9933;
+            --white: #FFFFFF;
+            --green: #138808;
+            --navy: #000080;
+            --bg-dark: #0a0a0f;
+            --bg-card: #13131a;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent: #ff6b35;
+            --success: #4ade80;
+            --error: #ef4444;
+            --border: #2a2a35;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 153, 51, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(19, 136, 8, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 153, 51, 0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: 3.5rem;
+            color: var(--saffron);
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 153, 51, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--saffron), var(--accent));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Main layout */
+        .playground {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, rgba(255, 153, 51, 0.1), rgba(255, 107, 53, 0.1));
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--saffron);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: '◆';
+            color: var(--accent);
+        }
+
+        /* Code editor */
+        .code-editor {
+            flex: 1;
+            position: relative;
+        }
+
+        textarea, pre {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            resize: none;
+            outline: none;
+        }
+
+        textarea {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Syntax highlighting colors */
+        .keyword { color: #ff6b9d; font-weight: 600; }
+        .string { color: #c3e88d; }
+        .number { color: #f78c6c; }
+        .comment { color: #5f5f5f; font-style: italic; }
+        .function { color: #82aaff; }
+        .type { color: #ffcb6b; }
+
+        /* Output panel */
+        .output-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 500px;
+            overflow-y: auto;
+            color: var(--text-secondary);
+        }
+
+        .output-line {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-left: 3px solid transparent;
+            animation: outputSlide 0.3s ease-out;
+        }
+
+        @keyframes outputSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .output-line.success {
+            color: var(--success);
+            border-left-color: var(--success);
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .output-line.error {
+            color: var(--error);
+            border-left-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .output-line.info {
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--saffron), var(--accent));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Examples section */
+        .examples {
+            margin-top: 30px;
+            animation: fadeIn 1s ease-out 0.4s both;
+        }
+
+        .examples-title {
+            font-size: 1.5rem;
+            color: var(--saffron);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .example-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-card:hover {
+            border-color: var(--saffron);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 153, 51, 0.2);
+        }
+
+        .example-card h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .example-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .playground {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--saffron);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>युक्ति Yukti</h1>
+            <p class="subtitle">Interactive Playground for the Indian Programming Language</p>
+            <div>
+                <span class="badge">🔥 Specification Phase</span>
+                <span class="badge">🇮🇳 Sanskrit Inspired</span>
+                <span class="badge">⚡ Modern & Safe</span>
+            </div>
+        </header>
+
+        <div class="playground">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Code Editor</div>
+                    <div class="controls">
+                        <button onclick="clearEditor()">Clear</button>
+                        <button onclick="formatCode()" class="secondary">Format</button>
+                    </div>
+                </div>
+                <div class="code-editor">
+                    <textarea id="code-input" spellcheck="false">prakriya main() -> Shunya {
+    // नमस्ते, विश्व!
+    likho("Namaste, World!");
+    
+    sthir x: Ank32 = 10;
+    sthir y: Ank32 = 20;
+    sthir sum = x + y;
+    
+    likho("Sum:", sum);
+    
+    // Pattern matching
+    milaan sum {
+        30 => likho("Perfect!"),
+        _ => likho("Different value")
+    }
+}</textarea>
+                </div>
+                <div class="status-bar">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Ready</span>
+                    </div>
+                    <span id="line-count">Lines: 14</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Output Console</div>
+                    <div class="controls">
+                        <button onclick="runCode()">▶ Run Code</button>
+                        <button onclick="clearOutput()" class="secondary">Clear Output</button>
+                    </div>
+                </div>
+                <div class="output-panel" id="output">
+                    <div class="output-line info">👋 Welcome to Yukti Playground!</div>
+                    <div class="output-line info">Click "Run Code" to execute your program.</div>
+                    <div class="output-line info">This is a demonstration interpreter for the Yukti language.</div>
+                </div>
+                <div class="status-bar">
+                    <span id="execution-time">Execution time: 0ms</span>
+                    <span id="status">Status: Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h2 class="examples-title">📚 Example Programs</h2>
+            <div class="examples-grid">
+                <div class="example-card" onclick="loadExample('hello')">
+                    <h3>Hello World</h3>
+                    <p>Basic introduction to Yukti syntax with a simple greeting program.</p>
+                </div>
+                <div class="example-card" onclick="loadExample('variables')">
+                    <h3>Variables & Types</h3>
+                    <p>Learn about immutable (sthir) and mutable (parivartan) variables.</p>
+                </div>
+                <div class="example-card" onclick="loadExample('functions')">
+                    <h3>Functions</h3>
+                    <p>Define and call functions (prakriya) with parameters and return values.</p>
+                </div>
+                <div class="example-card" onclick="loadExample('control')">
+                    <h3>Control Flow</h3>
+                    <p>Conditional statements (yadi/anyatha) and loops (chakra).</p>
+                </div>
+                <div class="example-card" onclick="loadExample('match')">
+                    <h3>Pattern Matching</h3>
+                    <p>Powerful pattern matching with milaan expression.</p>
+                </div>
+                <div class="example-card" onclick="loadExample('arithmetic')">
+                    <h3>Arithmetic</h3>
+                    <p>Basic arithmetic operations and expressions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Example programs
+        const examples = {
+            hello: `prakriya main() -> Shunya {
+    likho("नमस्ते, विश्व!");
+    likho("Namaste, World!");
+    likho("Hello from Yukti!");
+}`,
+            variables: `prakriya main() -> Shunya {
+    // Immutable variable
+    sthir name: Shabd = "Bharat";
+    sthir age: Ank32 = 25;
+    
+    likho("Name:", name);
+    likho("Age:", age);
+    
+    // Mutable variable
+    parivartan count: Ank32 = 0;
+    count = count + 1;
+    count = count + 1;
+    
+    likho("Count:", count);
+}`,
+            functions: `prakriya jod(a: Ank32, b: Ank32) -> Ank32 {
+    vapasi a + b;
+}
+
+prakriya guna(x: Ank32, y: Ank32) -> Ank32 {
+    vapasi x * y;
+}
+
+prakriya main() -> Shunya {
+    sthir result1 = jod(10, 20);
+    sthir result2 = guna(5, 6);
+    
+    likho("Addition:", result1);
+    likho("Multiplication:", result2);
+}`,
+            control: `prakriya main() -> Shunya {
+    sthir score: Ank32 = 85;
+    
+    // If-else statement
+    yadi score >= 90 {
+        likho("Grade: A");
+    } anyatha yadi score >= 80 {
+        likho("Grade: B");
+    } anyatha {
+        likho("Grade: C");
+    }
+    
+    // Loop
+    parivartan i: Ank32 = 0;
+    chakra yadi i < 5 {
+        likho("Count:", i);
+        i = i + 1;
+    }
+}`,
+            match: `prakriya describe_number(n: Ank32) -> Shunya {
+    milaan n {
+        0 => likho("Zero - शून्य"),
+        1 => likho("One - एक"),
+        2 => likho("Two - दो"),
+        3..=10 => likho("Between 3 and 10"),
+        _ => likho("Greater than 10")
+    }
+}
+
+prakriya main() -> Shunya {
+    describe_number(0);
+    describe_number(5);
+    describe_number(15);
+}`,
+            arithmetic: `prakriya main() -> Shunya {
+    sthir a: Ank32 = 100;
+    sthir b: Ank32 = 30;
+    
+    likho("a =", a);
+    likho("b =", b);
+    likho("");
+    
+    likho("a + b =", a + b);
+    likho("a - b =", a - b);
+    likho("a * b =", a * b);
+    likho("a / b =", a / b);
+    
+    sthir result = (a + b) * 2;
+    likho("(a + b) * 2 =", result);
+}`
+        };
+
+        // Simple interpreter for demonstration
+        class YuktiInterpreter {
+            constructor() {
+                this.output = [];
+                this.variables = {};
+                this.functions = {};
+            }
+
+            log(message, type = 'info') {
+                this.output.push({ message, type });
+            }
+
+            run(code) {
+                this.output = [];
+                this.variables = {};
+                this.functions = {};
+
+                try {
+                    // This is a simplified interpreter for demonstration
+                    // In reality, this would be much more complex
+                    
+                    this.log("🚀 Starting execution...", "info");
+                    
+                    // Parse and execute (simplified)
+                    if (code.includes('likho')) {
+                        const likhoMatches = code.matchAll(/likho\((.*?)\)/g);
+                        for (const match of likhoMatches) {
+                            const args = match[1].split(',').map(arg => {
+                                arg = arg.trim();
+                                // Remove quotes from strings
+                                if (arg.startsWith('"') && arg.endsWith('"')) {
+                                    return arg.slice(1, -1);
+                                }
+                                // Check if it's a variable
+                                if (this.variables[arg]) {
+                                    return this.variables[arg];
+                                }
+                                // Try to evaluate as number
+                                if (!isNaN(arg)) {
+                                    return arg;
+                                }
+                                return arg;
+                            });
+                            this.log(args.join(' '), "success");
+                        }
+                    }
+
+                    // Parse variable declarations (simplified)
+                    const varMatches = code.matchAll(/(?:sthir|parivartan)\s+(\w+)(?::\s*\w+)?\s*=\s*([^;]+)/g);
+                    for (const match of varMatches) {
+                        const name = match[1];
+                        let value = match[2].trim();
+                        
+                        // Remove quotes from strings
+                        if (value.startsWith('"') && value.endsWith('"')) {
+                            value = value.slice(1, -1);
+                        } else if (!isNaN(value)) {
+                            value = parseInt(value);
+                        } else {
+                            // Try to evaluate expression
+                            try {
+                                // Simple arithmetic evaluation
+                                const result = this.evaluateExpression(value);
+                                value = result;
+                            } catch (e) {
+                                value = value;
+                            }
+                        }
+                        
+                        this.variables[name] = value;
+                    }
+
+                    this.log("✓ Execution completed successfully", "success");
+                    
+                } catch (error) {
+                    this.log(`❌ Error: ${error.message}`, "error");
+                }
+
+                return this.output;
+            }
+
+            evaluateExpression(expr) {
+                // Replace variables with their values
+                for (const [name, value] of Object.entries(this.variables)) {
+                    expr = expr.replace(new RegExp(`\\b${name}\\b`, 'g'), value);
+                }
+                
+                // Safely evaluate arithmetic expressions
+                try {
+                    // Remove any non-math characters for safety
+                    if (/^[\d\s+\-*/(). ]+$/.test(expr)) {
+                        return eval(expr);
+                    }
+                } catch (e) {
+                    return expr;
+                }
+                
+                return expr;
+            }
+        }
+
+        const interpreter = new YuktiInterpreter();
+
+        // Run code
+        function runCode() {
+            const code = document.getElementById('code-input').value;
+            const outputDiv = document.getElementById('output');
+            const statusSpan = document.getElementById('status');
+            const timeSpan = document.getElementById('execution-time');
+            
+            statusSpan.textContent = 'Status: Running...';
+            outputDiv.innerHTML = '<div class="output-line info">⏳ Compiling and executing...</div>';
+            
+            const startTime = performance.now();
+            
+            setTimeout(() => {
+                const results = interpreter.run(code);
+                const endTime = performance.now();
+                const executionTime = (endTime - startTime).toFixed(2);
+                
+                outputDiv.innerHTML = '';
+                results.forEach(result => {
+                    const line = document.createElement('div');
+                    line.className = `output-line ${result.type}`;
+                    line.textContent = result.message;
+                    outputDiv.appendChild(line);
+                });
+                
+                statusSpan.textContent = 'Status: Complete';
+                timeSpan.textContent = `Execution time: ${executionTime}ms`;
+            }, 500);
+        }
+
+        // Clear output
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '<div class="output-line info">Output cleared. Ready for next execution.</div>';
+            document.getElementById('status').textContent = 'Status: Ready';
+            document.getElementById('execution-time').textContent = 'Execution time: 0ms';
+        }
+
+        // Clear editor
+        function clearEditor() {
+            document.getElementById('code-input').value = '';
+            updateLineCount();
+        }
+
+        // Format code (simplified)
+        function formatCode() {
+            const code = document.getElementById('code-input').value;
+            // Simple formatting - just ensure consistent spacing
+            const formatted = code.split('\n').map(line => line.trimEnd()).join('\n');
+            document.getElementById('code-input').value = formatted;
+        }
+
+        // Load example
+        function loadExample(name) {
+            document.getElementById('code-input').value = examples[name];
+            updateLineCount();
+            clearOutput();
+        }
+
+        // Update line count
+        function updateLineCount() {
+            const code = document.getElementById('code-input').value;
+            const lines = code.split('\n').length;
+            document.getElementById('line-count').textContent = `Lines: ${lines}`;
+        }
+
+        // Event listeners
+        document.getElementById('code-input').addEventListener('input', updateLineCount);
+        document.getElementById('code-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+            
+            // Ctrl/Cmd + Enter to run
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+        });
+
+        // Initialize
+        updateLineCount();
+    </script>
+</body>
+</html>
