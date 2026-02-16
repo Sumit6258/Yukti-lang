@@ -627,31 +627,7 @@ prakriya main() -> Shunya {
                     
                     this.log("🚀 Starting execution...", "info");
                     
-                    // Parse and execute (simplified)
-                    if (code.includes('likho')) {
-                        const likhoMatches = code.matchAll(/likho\((.*?)\)/g);
-                        for (const match of likhoMatches) {
-                            const args = match[1].split(',').map(arg => {
-                                arg = arg.trim();
-                                // Remove quotes from strings
-                                if (arg.startsWith('"') && arg.endsWith('"')) {
-                                    return arg.slice(1, -1);
-                                }
-                                // Check if it's a variable
-                                if (this.variables[arg]) {
-                                    return this.variables[arg];
-                                }
-                                // Try to evaluate as number
-                                if (!isNaN(arg)) {
-                                    return arg;
-                                }
-                                return arg;
-                            });
-                            this.log(args.join(' '), "success");
-                        }
-                    }
-
-                    // Parse variable declarations (simplified)
+                    // FIRST: Parse variable declarations (before executing likho)
                     const varMatches = code.matchAll(/(?:sthir|parivartan)\s+(\w+)(?::\s*\w+)?\s*=\s*([^;]+)/g);
                     for (const match of varMatches) {
                         const name = match[1];
@@ -674,6 +650,30 @@ prakriya main() -> Shunya {
                         }
                         
                         this.variables[name] = value;
+                    }
+                    
+                    // SECOND: Execute likho statements (after variables are defined)
+                    if (code.includes('likho')) {
+                        const likhoMatches = code.matchAll(/likho\((.*?)\);/g);
+                        for (const match of likhoMatches) {
+                            const args = match[1].split(',').map(arg => {
+                                arg = arg.trim();
+                                // Remove quotes from strings
+                                if (arg.startsWith('"') && arg.endsWith('"')) {
+                                    return arg.slice(1, -1);
+                                }
+                                // Check if it's a variable
+                                if (this.variables.hasOwnProperty(arg)) {
+                                    return this.variables[arg];
+                                }
+                                // Try to evaluate as number
+                                if (!isNaN(arg)) {
+                                    return arg;
+                                }
+                                return arg;
+                            });
+                            this.log(args.join(' '), "success");
+                        }
                     }
 
                     this.log("✓ Execution completed successfully", "success");
